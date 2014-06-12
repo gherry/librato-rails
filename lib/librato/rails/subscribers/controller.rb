@@ -15,7 +15,6 @@ module Librato
         status = event.payload[:status]
         http_method = event.payload[:method]
         exception = event.payload[:exception]
-        # page_key = "request.#{controller}.#{action}_#{format}."
 
         collector.group "rails.request" do |r|
 
@@ -30,10 +29,12 @@ module Librato
           end
 
           if http_method
-            verb = http_method.to_s.downcase
+            verb            = http_method.to_s.downcase
+            controller_name = controller.to_s.downcase
+            metric_name     = [controller_name, verb].join(".")
             r.group 'method' do |m|
-              m.increment verb
-              m.timing "#{verb}.time", event.duration
+              m.increment metric_name
+              m.timing "#{metric_name}.time", event.duration
             end
           end
 
